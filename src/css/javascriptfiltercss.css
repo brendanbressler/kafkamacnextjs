@@ -1,0 +1,26 @@
+/* body{
+    background: #454545;
+    color: #fff
+};
+
+textarea{
+    width: 100%;
+    height: 28%;
+    background: #1f1f1f;
+    color: #fff;
+    padding: 10px 20px;
+    border: 0;
+    outline: 0;
+    font-size: 18px;
+}; */
+
+p {
+    color: white;
+}
+
+label{
+    color: white;
+}
+ h2{
+     color: white;
+ }
