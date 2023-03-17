@@ -3,7 +3,7 @@ import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/ext-language_tools";
 
-export default function Ide({dataState}) {
+export default function Ide({dataState, consumerMessages}) {
     return(
     <>
     <AceEditor
@@ -13,6 +13,7 @@ export default function Ide({dataState}) {
     //onLoad={onload}
     defaultValue={`function filter(){ 
         //insert filter functionality for messages here 
+        console.log(${consumerMessages})
     }`}
      onChange={dataState}
      fontSize={14}
