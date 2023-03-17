@@ -93,7 +93,7 @@ export default function Home({data, topics}) {
     <div className="container">
           <div className='left'>
             <label htmlFor="JS">Javascript filter: </label>
-            <Ide dataState={setCodeData}/>
+            <Ide dataState={setCodeData} consumerMessages={newData}/>
           </div>
           <button type="button" className="btn btn-secondary" onClick={filter(newData, codeData)}>Filter</button>
     </div>
