@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import dynamic from "next/dynamic"
 const Ide = dynamic(() => import("../pages/ide"), {
   ssr: false
@@ -11,13 +11,32 @@ const Ide = dynamic(() => import("../pages/ide"), {
 
 const inter = Inter({ subsets: ['latin'] })
 
+
+
 export default function Home({data, topics}) {
   const [newData, setNewData] = useState(data);
   const [topicList, setTopicList] = useState(topics);
   const [codeData, setCodeData] = useState(); 
 
+  function filter(newData:any, codeData: any){
+    
+    console.log(codeData);
+    let messageArrObjects: any[] = []; 
+    newData.map(function(data, index) {
+      if(typeof data === "string"){
+        let newObj = JSON.parse(data);
+        messageArrObjects.push(newObj)
+      }
+    })
+    newData = messageArrObjects
+    console.log(newData)
+    //let newFilteredConsumedMessages = newData.filter(codeData);
+    //setNewData(newFilteredConsumedMessages);
+  }
+
   return (
     <>
+    <Suspense>
     <nav className="navbar navbar-expand-lg bg-body-tertiary bg-dark" data-bs-theme="dark">
   <div className="container-fluid">
     <a className="navbar-brand" href="#">Kafka Demo UI</a>
@@ -30,10 +49,6 @@ export default function Home({data, topics}) {
           <a className="nav-link active" aria-current="page" href="#">Consumer</a>
         </li>
       </ul>
-      <form className="d-flex" role="search">
-        <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-        <button className="btn btn-outline-success" type="submit">Search</button>
-      </form>
     </div>
   </div>
 </nav>
@@ -62,7 +77,7 @@ export default function Home({data, topics}) {
   <div className="accordion bg-dark" id="accordionPanelsStayOpenExample">
   <div className="card bg-dark">
   <div className="card bg-dark">
-    <div className="card-body text-bg-secondary">
+    <div className="card-body">
     <h2>Consumer settings</h2>
     <p className="d-inline-flex">Number of messages:</p>
       <div className="dropdown d-inline-flex" style={{marginRight: "15px"}}>
@@ -80,15 +95,16 @@ export default function Home({data, topics}) {
             <label htmlFor="JS">Javascript filter: </label>
             <Ide dataState={setCodeData}/>
           </div>
+          <button type="button" className="btn btn-secondary" onClick={filter(newData, codeData)}>Filter</button>
     </div>
   </div>
 </div>
   <div className="card-body">
     
   {newData.map(function(data, index) {
-    return <div className="accordion-item bg-dark text-white">
-      <h2 className="accordion-header bg-dark text-white"  id={'panelsStay-' + `${index}`}>
-        <button className="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target={'#panelsStayOpen-' + `${index}`} aria-expanded="false" aria-controls={'panelsStayOpen-' + `${index}`} key={index}>
+    return <div className="accordion-item bg-dark">
+      <h2 className="accordion-header bg-dark "  id={'panelsStay-' + `${index}`}>
+        <button className="accordion-button btn-secondary collapsed " type="button" data-bs-toggle="collapse" data-bs-target={'#panelsStayOpen-' + `${index}`} aria-expanded="false" aria-controls={'panelsStayOpen-' + `${index}`} key={index}>
         {data}
         </button>
       </h2>
@@ -104,9 +120,12 @@ export default function Home({data, topics}) {
 </div>
   </div>
   </main>
+  </Suspense>
     </>
   )
 }
+
+
 
 export async function getServerSideProps() {
 

@@ -97,15 +97,11 @@ function createConsumer(config, onData) {
 /**
  * consumerExample function used to run the common function for the consumer 
  */
-// async function consumerExample() {
   if (process.argv.length < 3) {
     console.log("Please provide the configuration file path as the command line argument");
     process.exit(1);
   }
-  let configPath = process.argv.slice(1)[0];
-  //const config = await configFromPath(configPath);
 
-  //let seen = 0;
   let topic = "purchases";
 
     const consumer = createConsumer();
@@ -135,14 +131,13 @@ function createConsumer(config, onData) {
         consumer.disconnect();
     });
 
-let newDataRendered = [];
-let numMessages = 10;
+    let newDataRendered = [];
+    let numMessages = 10;
 
    function cb(err,message ){
      console.log('hello')
      if(newDataRendered.length !== numMessages){
       newDataRendered.push(message.value.toString());
-      console.log(newDataRendered);
      }else if(newDataRendered.length === numMessages){
        res.status(200).json({ data: newDataRendered, topics: topicList})
      }
@@ -155,8 +150,6 @@ consumer.on('ready', function() {
   // only a callback) we get messages as soon as they are available.
   consumer.consume(cb);
 }).on('data', function(data) {
-  // Output the actual message contents
-  console.log('data', data.value.toString());
   
 })
 

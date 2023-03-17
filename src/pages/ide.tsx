@@ -9,8 +9,11 @@ export default function Ide({dataState}) {
     <AceEditor
      mode="javascript"
      theme="monokai"
-     name="blah2"
-    //  onLoad={this.onLoad}
+     name="javascriptuniquefilter"
+    //onLoad={onload}
+    defaultValue={`function filter(){ 
+        //insert filter functionality for messages here 
+    }`}
      onChange={dataState}
      fontSize={14}
      showPrintMargin={true}
