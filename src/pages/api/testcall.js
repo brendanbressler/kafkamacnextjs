@@ -135,13 +135,13 @@ function createConsumer(config, onData) {
     let numMessages = 10;
 
    function cb(err,message ){
-     console.log('hello')
      if(newDataRendered.length !== numMessages){
       newDataRendered.push(message.value.toString());
      }else if(newDataRendered.length === numMessages){
        res.status(200).json({ data: newDataRendered, topics: topicList})
      }
   }
+ 
 consumer.on('ready', function() {
   consumer.subscribe([topic]);
   
