@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import { useState, useEffect, Suspense } from 'react'
 import dynamic from "next/dynamic"
+import { Any } from 'react-spring'
 const Ide = dynamic(() => import("../pages/ide"), {
   ssr: false
 })
@@ -27,12 +28,35 @@ export default function Home({data, topics}) {
         let newObj = JSON.parse(data);
         messageArrObjects.push(newObj)
       }
-    })
-    newData = messageArrObjects
-    console.log(newData)
+    });
+    newData = messageArrObjects;
+    console.log(newData);
     //let newFilteredConsumedMessages = newData.filter(codeData);
     //setNewData(newFilteredConsumedMessages);
   }
+
+  /**
+   * function for changing the topic data
+   */
+async function setNewTopicData(){
+  
+  const res = await fetch('/api/testcall', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({topicName: "topic_0"}),
+  })
+
+  const json = await res.json();
+  console.log("json ", json.data);
+
+  // setNewData(newData => newData = json.data)
+}
+
+// useEffect(() => {
+//   setNewTopicData();
+// })
 
   return (
     <>
@@ -54,11 +78,16 @@ export default function Home({data, topics}) {
 </nav>
     <main className="d-flex flex-nowrap bg-dark">
     <div className="flex-shrink-0 p-3 bg-dark" style={{width: "280px;", height: "100vh"}}>
-    <a href="/" className="d-flex align-items-center pb-3 mb-3 link-light text-decoration-none border-bottom">
-      <svg className="bi pe-none me-2" width="30" height="24"><use xlinkHref="#bootstrap"></use></svg>
-      <span className="fs-5 fw-semibold">cluster_0</span>
-    </a>
-    <ul className="list-unstyled ps-0">
+    <div className="accordion bg-dark" id="accordionExample">
+  <div className="accordion-item bg-dark">
+    <h2 className="accordion-header" id="headingOne">
+      <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        cluster_0
+      </button>
+    </h2>
+    <div id="collapseOne" className="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+      <div className="accordion-body">
+      <ul className="list-unstyled ps-0">
       <li className="mb-1">
         <button className="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed text-white" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
           Topics
@@ -66,13 +95,18 @@ export default function Home({data, topics}) {
         <div className="collapse show" id="home-collapse">
           <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
           {topicList.map(function(topic, index) {
-           return <li><a href="#" className="link-light d-inline-flex text-decoration-none rounded">{topic.name}</a></li>
+           return <li><a className="link-light d-inline-flex text-decoration-none rounded" onClick={async () => setNewTopicData()}>{topic.name}</a></li>
           })}
           </ul>
         </div>
       </li>
       <li className="border-top my-3"></li>
     </ul>
+    </div>
+    </div>
+    </div>
+  </div>
+    
   </div>
   <div className="accordion bg-dark" id="accordionPanelsStayOpenExample">
   <div className="card bg-dark">
@@ -100,7 +134,6 @@ export default function Home({data, topics}) {
   </div>
 </div>
   <div className="card-body">
-    
   {newData.map(function(data, index) {
     return <div className="accordion-item bg-dark">
       <h2 className="accordion-header bg-dark "  id={'panelsStay-' + `${index}`}>

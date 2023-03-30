@@ -10,7 +10,7 @@ export default function handler(
  res
 ) {
      
-  
+  console.log(process.env.BOOTSTRAP_SERVERS)
   let consumedMessages = new Array();
   let newString = '';
 
@@ -50,24 +50,6 @@ export default function handler(
         return config;
       }, {});
     }
- // Call an external API endpoint to get posts
- function createConfigMap(config) {
-  if (process.env.SECURITY_PROTOCAL) {
-    return {
-      'bootstrap.servers': process.env.BOOTSTRAP_SERVERS,
-      'sasl.username': process.env.SASL_USERNAME,
-      'sasl.password': process.env.SASL_PASSWORD,
-      'security.protocol': process.env.SECURITY_PROTOCAL,
-      'sasl.mechanisms': process.env.SASL_MECHANISMS,
-      'group.id': 'brendan-test-test-1'
-    }
-  } else {
-    return {
-      'bootstrap.servers': process.env.BOOTSTRAP_SERVERS,
-      'group.id': 'brendan-test-test-1'
-    }
-  }
-}
 
 function create_UUID(){
   var dt = new Date().getTime();
@@ -81,6 +63,7 @@ function create_UUID(){
 
 let uniqueGroupId = create_UUID();
 function createConsumer(config, onData) {
+  console.log(process.env.BOOTSTRAP_SERVERS)
   const consumer = new Kafka.KafkaConsumer(
       {
       'metadata.broker.list': process.env.BOOTSTRAP_SERVERS,
@@ -88,6 +71,7 @@ function createConsumer(config, onData) {
       'sasl.password': process.env.SASL_PASSWORD,
       'security.protocol': process.env.SECURITY_PROTOCAL,
       'sasl.mechanisms': process.env.SASL_MECHANISMS,
+      'enable.ssl.certificate.verification': "false",
       'group.id': `${uniqueGroupId}`,
       'client.id': 'rdkafka',
       },{'auto.offset.reset': 'earliest'});
@@ -102,7 +86,7 @@ function createConsumer(config, onData) {
     process.exit(1);
   }
 
-  let topic = "purchases";
+  let topic = "topic_0";
 
     const consumer = createConsumer();
     //logging debug messages, if debug is enabled
@@ -139,6 +123,7 @@ function createConsumer(config, onData) {
       newDataRendered.push(message.value.toString());
      }else if(newDataRendered.length === numMessages){
        res.status(200).json({ data: newDataRendered, topics: topicList})
+       consumer.disconnect();
      }
   }
  
