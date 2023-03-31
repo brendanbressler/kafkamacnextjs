@@ -59,14 +59,8 @@ export default function Home({data, topics}) {
     var result = Function(javascriptStringCode)();
     
     console.log(filterNow);
-    let output = Object.fromEntries(
-      Object.entries(result)
-        .filter(([k, v]) => {
-          return true; // some irrelevant conditions here
-        })
-    );
-    console.log(output)
-      setNewData(newData => newData = output);
+    console.log([JSON.stringify(result["1"])])
+      setNewData(newData => newData = [JSON.stringify(result["1"])]);
       //setFilterNow(resetFilter => resetFilter = false);
     
     //let newFilteredConsumedMessages = newData.filter(codeData);
