@@ -86,7 +86,7 @@ function createConsumer(config, onData) {
     process.exit(1);
   }
 
-  let topic = "topic_0";
+  let topic = req.body.topicName ? req.body.topicName : "topic_0";
 
     const consumer = createConsumer();
     //logging debug messages, if debug is enabled

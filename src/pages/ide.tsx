@@ -11,11 +11,8 @@ export default function Ide({dataState, consumerMessages}) {
      theme="monokai"
      name="javascriptuniquefilter"
     //onLoad={onload}
-    defaultValue={`function filter(){ 
-        //insert filter functionality for messages here 
-        console.log(${consumerMessages})
-    }`}
-     onChange={dataState}
+    defaultValue={`Object.filter(consumedMessages, consumedMessage => consumedMessage.ordertime === 1497014222380);`}
+    onChange={dataState}
      fontSize={14}
      showPrintMargin={true}
      showGutter={true}

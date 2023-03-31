@@ -8,29 +8,67 @@ const Ide = dynamic(() => import("../pages/ide"), {
   ssr: false
 })
 
-
-
-const inter = Inter({ subsets: ['latin'] })
-
-
-
 export default function Home({data, topics}) {
   const [newData, setNewData] = useState(data);
   const [topicList, setTopicList] = useState(topics);
   const [codeData, setCodeData] = useState(); 
+  const [javascriptExecutionCode , setJavascriptExecutionCode] = useState();
+  const [filterNow, setFilterNow] = useState(false)
+
+  function executeScript(source) {
+    useEffect(() => {
+      var script = document.createElement("script");
+      script.onload = script.onerror = function(){ this.remove(); };
+      script.src = "data:text/plain;base64," + btoa(source);
+      document.body.appendChild(script);
+    
+    
+  })
+  }
 
   function filter(newData:any, codeData: any){
     
     console.log(codeData);
-    let messageArrObjects: any[] = []; 
-    newData.map(function(data, index) {
-      if(typeof data === "string"){
-        let newObj = JSON.parse(data);
-        messageArrObjects.push(newObj)
-      }
-    });
-    newData = messageArrObjects;
-    console.log(newData);
+    let testVal = Object.entries(newData);
+    let javascriptStringCode: string = ``
+    if(codeData !== undefined){
+       javascriptStringCode = `
+      Object.filter = (obj, predicate) => 
+         Object.keys(obj)
+        .filter( key => predicate(obj[key]) )
+        .reduce( (res, key) => (res[key] = obj[key], res), {} );
+
+        let consumedMessages = [${testVal}];` +
+         `let newFilteredArray = ${codeData}` + 
+         ` return newFilteredArray`
+    }else{
+      javascriptStringCode = `
+      Object.filter = (obj, predicate) => 
+         Object.keys(obj)
+        .filter( key => predicate(obj[key]) )
+        .reduce( (res, key) => (res[key] = obj[key], res), {} );
+
+        let consumedMessages = [${testVal}];` +
+         `let newFilteredArray = Object.filter(consumedMessages, consumedMessage => consumedMessage.ordertime === 1497014222380);` + 
+         ` return newFilteredArray`
+    }
+   
+          
+
+    console.log(javascriptStringCode)
+    var result = Function(javascriptStringCode)();
+    
+    console.log(filterNow);
+    let output = Object.fromEntries(
+      Object.entries(result)
+        .filter(([k, v]) => {
+          return true; // some irrelevant conditions here
+        })
+    );
+    console.log(output)
+      setNewData(newData => newData = output);
+      //setFilterNow(resetFilter => resetFilter = false);
+    
     //let newFilteredConsumedMessages = newData.filter(codeData);
     //setNewData(newFilteredConsumedMessages);
   }
@@ -38,20 +76,19 @@ export default function Home({data, topics}) {
   /**
    * function for changing the topic data
    */
-async function setNewTopicData(){
+async function setNewTopicData(event){
   
   const res = await fetch('/api/testcall', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({topicName: "topic_0"}),
+    body: JSON.stringify({topicName: event.target.id}),
   })
 
   const json = await res.json();
   console.log("json ", json.data);
-
-  // setNewData(newData => newData = json.data)
+  setNewData(newData => newData = json.data)
 }
 
 // useEffect(() => {
@@ -78,10 +115,10 @@ async function setNewTopicData(){
 </nav>
     <main className="d-flex flex-nowrap bg-dark">
     <div className="flex-shrink-0 p-3 bg-dark" style={{width: "280px;", height: "100vh"}}>
-    <div className="accordion bg-dark" id="accordionExample">
-  <div className="accordion-item bg-dark">
-    <h2 className="accordion-header" id="headingOne">
-      <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+    <div className="accordion border-dark bg-dark" id="accordionExample">
+  <div className="accordion-item border-dark bg-dark">
+    <h2 className="accordion-header border-dark" id="headingOne">
+      <button className="accordion-button border-dark bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
         cluster_0
       </button>
     </h2>
@@ -95,12 +132,12 @@ async function setNewTopicData(){
         <div className="collapse show" id="home-collapse">
           <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
           {topicList.map(function(topic, index) {
-           return <li><a className="link-light d-inline-flex text-decoration-none rounded" onClick={async () => setNewTopicData()}>{topic.name}</a></li>
+           return <li><a className="link-light d-inline-flex text-decoration-none rounded" id={topic.name} onClick={async (e) => setNewTopicData(e)}>{topic.name}</a></li>
           })}
           </ul>
         </div>
       </li>
-      <li className="border-top my-3"></li>
+      <li className="border-top border-dark my-3"></li>
     </ul>
     </div>
     </div>
@@ -129,7 +166,7 @@ async function setNewTopicData(){
             <label htmlFor="JS">Javascript filter: </label>
             <Ide dataState={setCodeData} consumerMessages={newData}/>
           </div>
-          <button type="button" className="btn btn-secondary" onClick={filter(newData, codeData)}>Filter</button>
+          <button type="button" className="btn btn-secondary" onClick={() => {setFilterNow(resetFilter => resetFilter = true); filter(newData, codeData); }}>Filter</button>
     </div>
   </div>
 </div>
